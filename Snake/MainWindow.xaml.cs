@@ -25,6 +25,7 @@ namespace Snake
             { GridValue.Empty, Images.Empty },
             { GridValue.Snake, Images.Body },
             { GridValue.Food, Images.Food },
+            { GridValue.Wall, Images.Wall },
         };
 
         private readonly Dictionary<Direction, int> dirToRotation = new()
@@ -45,6 +46,9 @@ namespace Snake
             InitializeComponent();
             gridImages = SetupGrid();
             gameState = new GameState(rows, cols);
+            
+
+
         }
 
         private async Task RunGame() 
@@ -52,6 +56,7 @@ namespace Snake
             Draw();
             await ShowCountDown();
             Overlay.Visibility = Visibility.Hidden;
+
             await GameLoop();
             await ShowGameOver();
             gameState = new GameState(rows, cols);
@@ -99,7 +104,8 @@ namespace Snake
         private async Task GameLoop() 
         { 
             while (!gameState.GameOver) 
-            { 
+            {
+                Audio.MainMusic.Play();
                 await Task.Delay(100);
                 gameState.Move();
                 Draw();
@@ -135,7 +141,7 @@ namespace Snake
         {
             DrawGrid();
             DrawSnakeHead();
-            ScoreText.Text = $"SCORE {gameState.Score}";
+            ScoreText.Text = $"SCORE: {gameState.Score}";
         }
         private void DrawGrid() 
         {
@@ -183,7 +189,8 @@ namespace Snake
         }
 
         private async Task ShowGameOver() 
-        { 
+        {
+            Audio.Death.Play();
             await DrawDeadSnake();
             await Task.Delay(1000);
             Overlay.Visibility = Visibility.Visible;

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
-
+using System.Windows.Media;
 namespace Snake
 {
     public class GameState
@@ -20,6 +20,8 @@ namespace Snake
         private readonly LinkedList<Position> snakePositions = new LinkedList<Position>();
         private readonly Random random = new Random();
 
+        
+
         public GameState(int rows, int cols) 
         {
             Rows = rows;
@@ -29,6 +31,7 @@ namespace Snake
 
             AddSnake();
             AddFood();
+            AddWalls();
         }
 
         private void AddSnake() 
@@ -67,6 +70,20 @@ namespace Snake
 
             Position pos = empty[random.Next(empty.Count)];
             Grid[pos.Row, pos.Col] = GridValue.Food;
+        }
+
+        private void AddWalls() 
+        {
+            int numbeerOfWalls = (int)(Rows * Cols * GameSettings.WallDensity);
+            List<Position> empty = new List<Position>(EmptyPositions());
+            for (int c = 0; c < numbeerOfWalls; c++) 
+            {
+                if (empty.Count == 0) 
+                    return;
+
+                Position pos = empty[random.Next(empty.Count)];
+                Grid[pos.Row, pos.Col] = GridValue.Wall;
+            }
         }
 
         public Position HeadPosition() 
@@ -157,7 +174,7 @@ namespace Snake
             Position newHeadPos = HeadPosition().Translate(Dir);
             GridValue hit = WillHit(newHeadPos);
 
-            if (hit == GridValue.Outside || hit == GridValue.Snake) 
+            if (hit == GridValue.Outside || hit == GridValue.Snake || (GameSettings.WallFatality && hit == GridValue.Wall))
             {
                 GameOver = true;
             }
@@ -174,5 +191,6 @@ namespace Snake
             }
             
         }
+
     }
 }

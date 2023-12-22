@@ -11,6 +11,7 @@ namespace Snake
         Empty,
         Snake,
         Food,
+        Wall,
         Outside
     }
 }
